@@ -1,0 +1,28 @@
+{
+  "name": "polygon-domains",
+  "version": "1.0.0",
+  "description": "Domain service (like ENS) on Polygon",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akshay-rakheja/Polygon-Domains.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akshay-rakheja/Polygon-Domains/issues"
+  },
+  "homepage": "https://github.com/akshay-rakheja/Polygon-Domains#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.4",
+    "hardhat": "^2.8.4"
+  }
+}
