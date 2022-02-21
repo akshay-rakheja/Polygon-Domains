@@ -21,6 +21,12 @@ contract Domains {
 
     function register(string calldata name) public payable {
         require(domains[name] == address(0));
+
+        uint256 _price = price(name);
+
+        // Check if enough Matic was paid in the transaction
+        require(msg.value >= _price, "Not enough Matic paid.");
+
         domains[name] = msg.sender;
         console.log("%s has registered for a domain", msg.sender);
     }
