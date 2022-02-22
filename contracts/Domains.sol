@@ -10,6 +10,7 @@ import {StringUtils} from "./libraries/StringUtils.sol";
 import "hardhat/console.sol";
 
 contract Domains is ERC721URIStorage {
+    address payable public owner;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenid;
 
@@ -30,6 +31,7 @@ contract Domains is ERC721URIStorage {
         payable
         ERC721("United Name Service", "UNS")
     {
+        owner = payable(msg.sender);
         tld = _tld;
         console.log("%s name service deployed. Congo!", _tld);
     }
@@ -129,5 +131,21 @@ contract Domains is ERC721URIStorage {
         } else {
             return 2 * 10**17;
         }
+    }
+
+    modifier onlyOwner() {
+        require(isOwner());
+        _;
+    }
+
+    function isOwner() public view returns (bool) {
+        return msg.sender == owner;
+    }
+
+    function withdraw() public onlyOwner {
+        uint256 amount = address(this).balance;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Failed to withdraw Matic");
     }
 }
