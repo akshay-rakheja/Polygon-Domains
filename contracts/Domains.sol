@@ -14,6 +14,10 @@ contract Domains is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenid;
 
+    error Unauthorized();
+    error AlreadyRegistered();
+    error InvalidName(string name);
+
     //top level domain
     string public tld;
 
@@ -26,6 +30,8 @@ contract Domains is ERC721URIStorage {
     mapping(string => address) public domains;
     //mapping that stores the record for domain
     mapping(string => string) public records;
+    // mapping tokenID to domain -> used to retrieve all names registered.
+    mapping(uint256 => string) public names;
 
     constructor(string memory _tld)
         payable
@@ -36,8 +42,26 @@ contract Domains is ERC721URIStorage {
         console.log("%s name service deployed. Congo!", _tld);
     }
 
+    //gets all names registered using names mapping
+    function getAllNames() public view returns (string[] memory) {
+        console.log("Getting all names from contract");
+        string[] memory allNames = new string[](_tokenid.current());
+        for (uint256 i = 0; i < _tokenid.current(); i++) {
+            allNames[i] = names[i];
+            console.log("Name for token %d is %s", i, allNames[i]);
+        }
+
+        return allNames;
+    }
+
+    //check if the name entered is >=3 && <=10 chars
+    function valid(string calldata name) public pure returns (bool) {
+        return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 10;
+    }
+
     function register(string calldata name) public payable {
-        require(domains[name] == address(0));
+        if (domains[name] != address(0)) revert AlreadyRegistered();
+        if (!valid(name)) revert InvalidName(name);
 
         uint256 _price = price(name);
 
@@ -94,6 +118,7 @@ contract Domains is ERC721URIStorage {
 
         //assigning domain to the message sender
         domains[name] = msg.sender;
+        names[newRecordID] = name;
         //incrementing tokenid for next token
         _tokenid.increment();
         console.log(
@@ -109,7 +134,7 @@ contract Domains is ERC721URIStorage {
     }
 
     function setRecord(string calldata name, string calldata record) public {
-        require(domains[name] == msg.sender);
+        if (msg.sender != domains[name]) revert Unauthorized();
         records[name] = record;
     }
 
