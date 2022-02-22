@@ -1,13 +1,13 @@
 const main = async () => {
   const [owner, superCoder] = await hre.ethers.getSigners();
   const domainContractFactory = await hre.ethers.getContractFactory('Domains');
-  const domainContract = await domainContractFactory.deploy("ninja");
+  const domainContract = await domainContractFactory.deploy("united");
   await domainContract.deployed();
 
   console.log("Contract owner:", owner.address);
 
   // Let's be extra generous with our payment (we're paying more than required)
-  let txn = await domainContract.register("a16z",  {value: hre.ethers.utils.parseEther('1234')});
+  let txn = await domainContract.register("akshay",  {value: hre.ethers.utils.parseEther('1234')});
   await txn.wait();
 
   // How much money is in here?

@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";import './styles/App.css';
 import twitterLogo from './assets/twitter-logo.svg';
 import { ethers } from "ethers";
 import CONTRACT_ABI from './utils/Domains.json';
+import { networks } from "./utils/networks";
+import polygonLogo from './assets/polygonlogo.png';
+import ethLogo from './assets/ethlogo.png';
 
 // Constants
 const TWITTER_HANDLE = '_buildspace';
@@ -9,11 +12,12 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 // Add the domain you will be minting
 const tld = '.united';
-const CONTRACT_ADDRESS = '0xbe61F2bA0d7E18187085914C5E59d2519A983636';
+const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 
 const App = () => {
 
+	const [network, setNetwork] = useState('');
 	const[currentAccount, setAccount] = useState("");
 	const [domain, setDomain] = useState('');
 	const [record, setRecord] = useState('');
@@ -59,6 +63,18 @@ const App = () => {
 		} else {
 			console.log('No authorized account found');
 		}
+
+		// This is the new part, we check the user's network chain ID
+		const chainId = await ethereum.request({ method: 'eth_chainId' });
+		setNetwork(networks[chainId]);
+
+		ethereum.on('chainChanged', handleChainChanged);
+		
+		// Reload the page when they change networks
+		function handleChainChanged(_chainId) {
+			window.location.reload();
+		}
+
 	}
 
 
@@ -78,11 +94,13 @@ const App = () => {
 				const provider = new ethers.providers.Web3Provider(ethereum);
 				const signer = provider.getSigner();
 				const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI.abi, signer);
-
-				console.log("Going to pop wallet now to pay gas...")
+				console.log(contract);
+				console.log("Going to pop wallet now to pay gas...");
 				let tx = await contract.register(domain, {value: ethers.utils.parseEther(price)});
 				// Wait for the transaction to be mined
+				console.log("gonna wait for txn.");
 				const receipt = await tx.wait();
+				console.log("reached here");
 
 				// Check if the transaction was successfully completed
 				if (receipt.status === 1) {
@@ -119,6 +137,15 @@ const App = () => {
 
 	// Form to enter domain name and data
 	const renderInputForm = () =>{
+
+		// If not on Polygon Mumbai Testnet, render "Please connect to Polygon Mumbai Testnet"
+		if (network !== 'Polygon Mumbai Testnet') {
+			return (
+				<div className="connect-wallet-container">
+					<p>Please connect to the Polygon Mumbai Testnet</p>
+				</div>
+			);
+		}
 		return (
 			<div className="form-container">
 				<div className="first-row">
@@ -141,10 +168,7 @@ const App = () => {
 				<div className="button-container">
 					<button className='cta-button mint-button' disabled={null} onClick={mintDomain}>
 						Mint
-					</button>  
-					<button className='cta-button mint-button' disabled={null} onClick={null}>
-						Set data
-					</button>  
+					</button>
 				</div>
 
 			</div>
@@ -161,12 +185,17 @@ const App = () => {
 			<div className="container">
 
 				<div className="header-container">
-					<header>
-            <div className="left">
-              <p className="title">🐱‍👤 United Name Service</p>
-              <p className="subtitle">Your immortal API on the blockchain!</p>
-            </div>
-					</header>
+				<header>
+					<div className="left">
+						<p className="title">🐱‍👤 United Name Service</p>
+						<p className="subtitle">Your immortal API on the blockchain!</p>
+					</div>
+					{/* Display a logo and wallet connection status*/}
+					<div className="right">
+						<img alt="Network logo" className="logo" src={ network.includes("Polygon") ? polygonLogo : ethLogo} />
+						{ currentAccount ? <p> Wallet: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </p> : <p> Not connected </p> }
+					</div>
+				</header>
 				</div>
 				{/*if account isnt connected render this */}
 				{!currentAccount && renderNotConnectedContainer()}
