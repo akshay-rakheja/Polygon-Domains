@@ -54,11 +54,6 @@ contract Domains is ERC721URIStorage {
         return allNames;
     }
 
-    //check if the name entered is >=3 && <=10 chars
-    // function valid(string calldata name) public pure returns (bool) {
-    //     return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 10;
-    // }
-
     function register(string calldata name) public payable {
         if (domains[name] != address(0)) revert AlreadyRegistered();
         //if (!valid(name)) revert InvalidName(name);
