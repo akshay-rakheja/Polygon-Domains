@@ -1,15 +1,11 @@
-# Basic Sample Hardhat Project
+# Domain Service built on Polygon
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Checkout my App at: https://polygon-domains-2.vercel.app/ 
 
-Try running some of the following tasks:
+## Useful commands:
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+1. npm init  -y //to setup frontend environment
+2. npx hardhat //setup basic hardhat project
+3. npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers //install necessary libraries
+4. npx hardhat run //run deploy/run.js scripts.
+5. npm start //start node server
